@@ -94,6 +94,9 @@
 
 - meta: flush_handlers
 
+- import_tasks: dns.yml
+  tags: dns
+
 - name: Set up user profile
   block:
     - name: Bash completion
@@ -116,6 +119,9 @@
   ansible.builtin.wait_for:
     port: 6443
     delay: 10
+
+- import_tasks: metallb.yml
+  tags: metallb
 
 - import_tasks: console.yml
   tags: console

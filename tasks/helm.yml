@@ -9,17 +9,20 @@
     #state: absent
     values:
       service:
-        type: NodePort
+        type: LoadBalancer
         port: 80
-        nodePort: 30091
 
-- name: Get pods info
+- name: Get service info
   kubernetes.core.k8s_info:
     api_version: v1
-    kind: Pod
+    kind: Service
     label_selectors:
       - "app.kubernetes.io/instance=httpbin"
     namespace: httpbin
     wait_sleep: 10
     wait_timeout: 360
   register: _httpbin
+
+- debug:
+    msg: |
+      You can now access httpbin on: http://{{ _httpbin.resources[0].status.loadBalancer.ingress[0].ip }}

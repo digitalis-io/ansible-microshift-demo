@@ -1,0 +1,22 @@
+---
+- name: Deploy metallb
+  kubernetes.core.helm:
+    name: metallb
+    chart_repo_url: https://metallb.github.io/metallb
+    chart_ref: metallb
+    release_namespace: metallb-system
+    create_namespace: true
+
+- name: Get an existing Service object
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: metallb.io/v1beta1
+      kind: IPAddressPool
+      metadata:
+        name: first-pool
+        namespace: metallb-system
+      spec:
+        addresses:
+        - 192.168.56.100-192.168.56.110
+
+...
