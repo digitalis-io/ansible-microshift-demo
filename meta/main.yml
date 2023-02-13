@@ -1,0 +1,18 @@
+galaxy_info:
+  author: Digitalis.IO DevOps
+  description: Digitalis Role for install Redhat microshift
+  company: Digitalis.IO
+  license: BSD
+
+  min_ansible_version: 2.9
+
+  platforms:
+  - name: RedHat
+    versions:
+    - all
+
+  galaxy_tags:
+  - ansible-role-microshift
+
+dependencies:
+  - role: gantsign.helm

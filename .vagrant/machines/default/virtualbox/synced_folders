@@ -1,0 +1,1 @@
+{"rsync":{"/vagrant":{"type":"rsync","guestpath":"/vagrant","hostpath":"/Users/sergio.rua/BitBucket/redhat/demo/ansible-role-microshift","disabled":false,"__vagrantfile":true,"owner":"vagrant","group":"vagrant"}}}
