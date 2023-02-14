@@ -1,4 +1,4 @@
-- name: Fix CoreDNS dns
+- name: Set up CoreDNS
   kubernetes.core.k8s:
     definition:
       apiVersion: v1
@@ -16,7 +16,7 @@
                   fallthrough in-addr.arpa ip6.arpa
               }
               prometheus 127.0.0.1:9153
-              forward . 8.8.8.8 {
+              forward . {{ dns_server }} {
                   policy sequential
               }
               cache 900 {

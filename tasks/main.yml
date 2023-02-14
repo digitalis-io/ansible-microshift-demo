@@ -94,9 +94,6 @@
 
 - meta: flush_handlers
 
-- import_tasks: dns.yml
-  tags: dns
-
 - name: Set up user profile
   block:
     - name: Bash completion
@@ -118,7 +115,27 @@
 - name: Wait for port microshift to start
   ansible.builtin.wait_for:
     port: 6443
-    delay: 10
+    delay: 60
+
+- name: Wait for kubeconfig file
+  shell: ls -lrt {{ kubeconfig }}
+  register: lsresult
+  until: "lsresult is not failed"
+  retries: 100
+  delay: 1
+
+- name: Confirm k8s is running
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Pod
+    label_selectors:
+      - "dns.operator.openshift.io/daemonset-dns=default"
+    namespace: openshift-dns
+    wait_sleep: 1
+    wait_timeout: 360
+
+- import_tasks: dns.yml
+  tags: dns
 
 - import_tasks: metallb.yml
   tags: metallb
@@ -128,3 +145,9 @@
 
 - import_tasks: helm.yml
   tags: helm
+
+- import_tasks: argocd.yml
+  tags: argocd
+
+- import_tasks: argocd_apps.yml
+  tags: argocd_apps

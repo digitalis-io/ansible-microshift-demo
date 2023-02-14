@@ -9,6 +9,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.network :forwarded_port, guest: 30036, host: 30036, id: "console"
   config.vm.network :forwarded_port, guest: 80, host: 80, id: "web"
+  config.vm.network :forwarded_port, guest: 30443, host: 30036, id: "argocd"
 
   config.vm.hostname = 'microshift.digitalis.host'
   config.vm.provision "ansible_local" do |ansible|

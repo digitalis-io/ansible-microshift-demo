@@ -1,0 +1,61 @@
+- name: Get ArgoCD password
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Secret
+    name: argocd-initial-admin-secret
+    namespace: argocd
+    wait_sleep: 10
+    wait_timeout: 120
+  register: _argocd
+  when: _argocd is not defined
+
+- name: Login to ArgoCD
+  ansible.builtin.uri:
+    url: https://argocd.{{ vagrant_ip }}.nip.io:30443/api/v1/session
+    method: POST
+    validate_certs: false
+    body_format: json
+    status_code: [200, 202]
+    return_content: true
+    headers:
+      Content-Type: application/json
+    body:
+      username: admin
+      password: "{{ _argocd.resources[0].data.password | b64decode }}"
+  register: _argocd_login
+
+- debug:
+    var: _argocd_login
+
+- name: Create ArgoCD application
+  ansible.builtin.uri:
+    url: https://argocd.{{ vagrant_ip }}.nip.io:30443/api/v1/applications
+    method: POST
+    validate_certs: false
+    body_format: json
+    status_code: [200, 202]
+    return_content: true
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{ _argocd_login.json.token }}"
+    body:
+      metadata:
+        name: httpbin
+        namespace: argocd
+      spec:
+        source:
+          repoURL: https://matheusfm.dev/charts
+          chart: httpbin
+          targetRevision: 0.1.1
+        destination:
+          server: https://kubernetes.default.svc
+          namespace: httpbin
+        project: default
+        syncPolicy:
+          automated:
+            prune: true
+            selfHeal: true
+          syncOptions:
+          - Validate=false
+          - CreateNamespace=true
+        revisionHistoryLimit: 10

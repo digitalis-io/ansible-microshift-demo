@@ -5,7 +5,18 @@
     chart_repo_url: https://metallb.github.io/metallb
     chart_ref: metallb
     release_namespace: metallb-system
+    wait: true
     create_namespace: true
+
+- name: Confirm metallb is running
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Pod
+    label_selectors:
+      - "app.kubernetes.io/instance=metallb"
+    namespace: metallb-system
+    wait_sleep: 10
+    wait_timeout: 120
 
 - name: Get an existing Service object
   kubernetes.core.k8s:
@@ -18,5 +29,4 @@
       spec:
         addresses:
         - 192.168.56.100-192.168.56.110
-
 ...

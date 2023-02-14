@@ -1,28 +1,28 @@
-- name: Deploy sample app
-  kubernetes.core.helm:
-    name: httpbin
-    chart_repo_url: https://matheusfm.dev/charts
-    chart_ref: httpbin
-    chart_version: 0.1.1
-    release_namespace: httpbin
-    create_namespace: true
-    #state: absent
-    values:
-      service:
-        type: LoadBalancer
-        port: 80
+# - name: Deploy sample app
+#   kubernetes.core.helm:
+#     name: httpbin
+#     chart_repo_url: https://matheusfm.dev/charts
+#     chart_ref: httpbin
+#     chart_version: 0.1.1
+#     release_namespace: httpbin
+#     create_namespace: true
+#     wait: true
+#     values:
+#       service:
+#         type: LoadBalancer
+#         port: 80
 
-- name: Get service info
-  kubernetes.core.k8s_info:
-    api_version: v1
-    kind: Service
-    label_selectors:
-      - "app.kubernetes.io/instance=httpbin"
-    namespace: httpbin
-    wait_sleep: 10
-    wait_timeout: 360
-  register: _httpbin
+# - name: Get service info
+#   kubernetes.core.k8s_info:
+#     api_version: v1
+#     kind: Service
+#     label_selectors:
+#       - "app.kubernetes.io/instance=httpbin"
+#     namespace: httpbin
+#     wait_sleep: 10
+#     wait_timeout: 120
+#   register: _httpbin
 
-- debug:
-    msg: |
-      You can now access httpbin on: http://{{ _httpbin.resources[0].status.loadBalancer.ingress[0].ip }}
+# - debug:
+#     msg: |
+#       You can now access httpbin on: http://{{ _httpbin.resources[0].status.loadBalancer.ingress[0].ip }}
