@@ -15,16 +15,3 @@
       configs:
         cm:
           url: https://argocd.{{ vagrant_ip }}.nip.io:30443
-
-- name: Get ArgoCD password
-  kubernetes.core.k8s_info:
-    api_version: v1
-    kind: Secret
-    name: argocd-initial-admin-secret
-    namespace: argocd
-    wait_sleep: 10
-    wait_timeout: 120
-  register: _argocd
-
-- debug:
-    msg: "ArgoCD running on https://argocd.{{ vagrant_ip }}.nip.io:30443 with admin password: {{ _argocd.resources[0].data.password | b64decode }}"

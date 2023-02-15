@@ -1,3 +1,9 @@
+- name: Wait for ArgoCD to start up
+  ansible.builtin.wait_for:
+    port: 30443
+    host: argocd.{{ vagrant_ip }}.nip.io
+    delay: 1
+
 - name: Get ArgoCD password
   kubernetes.core.k8s_info:
     api_version: v1
@@ -7,11 +13,21 @@
     wait_sleep: 10
     wait_timeout: 120
   register: _argocd
-  when: _argocd is not defined
+
+- pause:
+    seconds: 1
+    prompt: |
+      =========================
+      ArgoCD running on https://argocd.{{ vagrant_ip }}.nip.io:30443
+
+      Username: admin
+      Password: {{ _argocd.resources[0].data.password | b64decode }}
+      =========================
+
 
 - name: Login to ArgoCD
   ansible.builtin.uri:
-    url: https://argocd.{{ vagrant_ip }}.nip.io:30443/api/v1/session
+    url: "https://argocd.{{ vagrant_ip }}.nip.io:30443/api/v1/session"
     method: POST
     validate_certs: false
     body_format: json
@@ -29,7 +45,7 @@
 
 - name: Create ArgoCD application
   ansible.builtin.uri:
-    url: https://argocd.{{ vagrant_ip }}.nip.io:30443/api/v1/applications
+    url: "https://argocd.{{ vagrant_ip }}.nip.io:30443/api/v1/applications"
     method: POST
     validate_certs: false
     body_format: json
@@ -64,5 +80,9 @@
   retries: 720 # 720 * 5 seconds = 1hour (60*60/5)
   delay: 5 # Every 5 seconds
 
-- debug:
-    var: _argocd_app
+- pause:
+    seconds: 1
+    prompt: |
+      ----------------------------------------------------------------
+      ArgoCD App deployed: {{ _argocd_app.json["metadata"]["name"] }}
+      ----------------------------------------------------------------

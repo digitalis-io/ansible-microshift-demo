@@ -93,5 +93,10 @@
                 nodePort: 30090
                 protocol: TCP
 
-    - debug:
-        msg: "Console running on http://console.{{ vagrant_ip}}.nip.io:30090"
+    - pause:
+        seconds: 1
+        prompt: |
+          =========================
+          Console running on http://console.{{ vagrant_ip}}.nip.io:30090
+          =========================
+

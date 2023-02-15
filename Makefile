@@ -13,7 +13,7 @@ PASSWORD_FILE ?= ~/.vault_pass.txt
 OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 ANSIBLE_USER=vagrant
 #VAGRANT_IP=$(shell vagrant ssh -c "hostname -I | cut -d' ' -f2" 2> /dev/null)
-VAGRANT_IP=192.168.56.10
+VAGRANT_IP=192.168.56.12
 INVENTORY=$(VAGRANT_IP),
 RED='\033[0;31m'
 GREEN='\032[0;31m'
@@ -38,13 +38,17 @@ help: ## This help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 build: check-env ## Runs the playbook to install Kubernetes
-	@${PIPENVCMD} ansible-playbook -i ${INVENTORY} sample.yml --diff -u ${ANSIBLE_USER} \
-		-e env=$(ENVIRONMENT) -e vagrant_ip=$(VAGRANT_IP) ${EXTRA}
-	
+	@${PIPENVCMD} ansible-playbook -i ${INVENTORY} demo.yml --diff -u ${ANSIBLE_USER} \
+		-e env=$(ENVIRONMENT) -e vagrant_ip=$(VAGRANT_IP) ${EXTRA} -e ansible_become_pass=vagrant
+
+hardening: check-env ## Runs the playbook for hardening
+	@${PIPENVCMD} ansible-playbook -i ${INVENTORY} hardening.yml --diff -u ${ANSIBLE_USER} \
+		-e env=$(ENVIRONMENT) -e vagrant_ip=$(VAGRANT_IP) ${EXTRA} -e ansible_become_pass=vagrant
+
 helm: check-env ## Deploy helm charts
 	@${PIPENVCMD} ansible-playbook -i ${INVENTORY} sample.yml --diff -u ${ANSIBLE_USER} \
-		-e env=$(ENVIRONMENT) -e vagrant_ip=$(VAGRANT_IP) ${EXTRA} --tags helm
+		-e env=$(ENVIRONMENT) -e vagrant_ip=$(VAGRANT_IP) ${EXTRA} --tags helm -e ansible_become_pass=vagrant
 
 argocd: check-env ## Install ArgoCD
 	@${PIPENVCMD} ansible-playbook -i ${INVENTORY} sample.yml --diff -u ${ANSIBLE_USER} \
-		-e env=$(ENVIRONMENT) -e vagrant_ip=$(VAGRANT_IP) ${EXTRA} --tags argocd
+		-e env=$(ENVIRONMENT) -e vagrant_ip=$(VAGRANT_IP) ${EXTRA} --tags argocd -e ansible_become_pass=vagrant

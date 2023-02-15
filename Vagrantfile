@@ -13,9 +13,10 @@ Vagrant.configure("2") do |config|
 
   config.vm.network :forwarded_port, guest: 30090, host: 30090, id: "console"
   config.vm.network :forwarded_port, guest: 30080, host: 30080, id: "web"
-  config.vm.network :forwarded_port, guest: 30443, host: 30036, id: "argocd"
+  config.vm.network :forwarded_port, guest: 30443, host: 30443, id: "argocd"
 
   config.vm.hostname = 'microshift.digitalis.host'
+
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "vagrant.yml"
   end
