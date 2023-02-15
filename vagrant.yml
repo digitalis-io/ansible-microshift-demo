@@ -1,0 +1,16 @@
+- hosts: all
+  become: true
+  tasks:
+    - name: Copy SSH key
+      lineinfile:
+        path: /home/vagrant/.ssh/authorized_keys
+        line: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDSW3xOh8QhpXOZ87y79GcXEbVDR8th+jMzEmi4s3NUfx6UJKbu/MDL//cRtLCkpJ6+qrO5xRMiIxIqruH4t+vOZTraazHOgmAPOwI8b1/wxXJB3aM9qk68LanJ0SnLIlIwQDkMqsnlXav+qAuWNV9078oxUAUDwsjd2hP8dKHCg9ysfRRezpkbBKe+yGzRIT8on1LcBPoLaxAKsXjwzUJaKvfmQukcdLy6pXAcUSVlu7nUJf+S9E9rTuai5EOpVd5saS3b/ce9PSfVGu/FO4QQOKdRD83ahn4RKcxQlS4R/njNGJPaLq3WxKKtmJsQLo18BPa082TTZ0RcDYzv9Omd sergio.rua@DESKTOP-COU0518
+
+    - name: Install deps
+      package:
+        name:
+          - python3-pip
+    
+    - name: Kube python
+      pip:
+        name: kubernetes
