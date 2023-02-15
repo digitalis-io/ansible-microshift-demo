@@ -22,10 +22,10 @@
     body:
       username: admin
       password: "{{ _argocd.resources[0].data.password | b64decode }}"
+  until: _argocd_login.status == 200
+  retries: 720 # 720 * 5 seconds = 1hour (60*60/5)
+  delay: 5 # Every 5 seconds
   register: _argocd_login
-
-- debug:
-    var: _argocd_login
 
 - name: Create ArgoCD application
   ansible.builtin.uri:
@@ -59,3 +59,10 @@
           - Validate=false
           - CreateNamespace=true
         revisionHistoryLimit: 10
+  register: _argocd_app
+  until: _argocd_app.status in [200, 202]
+  retries: 720 # 720 * 5 seconds = 1hour (60*60/5)
+  delay: 5 # Every 5 seconds
+
+- debug:
+    var: _argocd_app
