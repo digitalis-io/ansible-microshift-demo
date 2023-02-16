@@ -24,9 +24,6 @@
 - import_tasks: console.yml
   tags: console
 
-# - import_tasks: helm.yml
-#   tags: helm
-
 - import_tasks: argocd.yml
   tags: argocd
 

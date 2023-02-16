@@ -16,3 +16,4 @@ galaxy_info:
 
 dependencies:
   - role: gantsign.helm
+  - role: https://github.com/digitalis-io/ansible-role-hardening.git

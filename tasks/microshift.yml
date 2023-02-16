@@ -67,11 +67,11 @@
     dest: /usr/local/bin/kubectl
     mode: 0755
 
-- name: Install ODO client
-  get_url:
-    url: https://developers.redhat.com/content-gateway/rest/mirror/pub/openshift-v4/clients/odo/latest/odo-linux-amd64
-    dest: /usr/local/bin/odo
-    mode: 0755
+#- name: Install ODO client
+#  get_url:
+#    url: https://developers.redhat.com/content-gateway/rest/mirror/pub/openshift-v4/clients/odo/latest/odo-linux-amd64
+#    dest: /usr/local/bin/odo
+#    mode: 0755
 
 - name: Start crio
   ansible.builtin.systemd:
