@@ -13,7 +13,7 @@ PASSWORD_FILE ?= ~/.vault_pass.txt
 OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 ANSIBLE_USER=vagrant
 #VAGRANT_IP=$(shell vagrant ssh -c "hostname -I | cut -d' ' -f2" 2> /dev/null)
-VAGRANT_IP=192.168.56.13
+VAGRANT_IP=192.168.56.19
 INVENTORY=$(VAGRANT_IP),
 RED='\033[0;31m'
 GREEN='\032[0;31m'
@@ -46,9 +46,13 @@ hardening: check-env ## Runs the playbook for hardening
 		-e env=$(ENVIRONMENT) -e vagrant_ip=$(VAGRANT_IP) ${EXTRA} -e ansible_become_pass=vagrant
 
 helm: check-env ## Deploy helm charts
-	@${PIPENVCMD} ansible-playbook -i ${INVENTORY} sample.yml --diff -u ${ANSIBLE_USER} \
+	@${PIPENVCMD} ansible-playbook -i ${INVENTORY} demo.yml --diff -u ${ANSIBLE_USER} \
 		-e env=$(ENVIRONMENT) -e vagrant_ip=$(VAGRANT_IP) ${EXTRA} --tags helm -e ansible_become_pass=vagrant
 
 argocd: check-env ## Install ArgoCD
-	@${PIPENVCMD} ansible-playbook -i ${INVENTORY} sample.yml --diff -u ${ANSIBLE_USER} \
+	@${PIPENVCMD} ansible-playbook -i ${INVENTORY} demo.yml --diff -u ${ANSIBLE_USER} \
 		-e env=$(ENVIRONMENT) -e vagrant_ip=$(VAGRANT_IP) ${EXTRA} --tags argocd -e ansible_become_pass=vagrant
+
+argocd-apps: check-env ## Install ArgoCD Applications
+	@${PIPENVCMD} ansible-playbook -i ${INVENTORY} demo.yml --diff -u ${ANSIBLE_USER} \
+		-e env=$(ENVIRONMENT) -e vagrant_ip=$(VAGRANT_IP) ${EXTRA} --tags argocd_apps -e ansible_become_pass=vagrant
