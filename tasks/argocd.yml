@@ -1,0 +1,17 @@
+- name: Deploy ArgoCD
+  kubernetes.core.helm:
+    name: argocd
+    chart_ref: https://github.com/argoproj/argo-helm/releases/download/argo-cd-5.2.0/argo-cd-5.2.0.tgz
+    release_namespace: argocd
+    create_namespace: true
+    wait: true
+    values:
+      server:
+        service:
+          type: NodePort
+          port: 80
+          nodePort: 30443
+      fullNameOverride: "argocd"
+      configs:
+        cm:
+          url: https://argocd.{{ vagrant_ip }}.nip.io:30443

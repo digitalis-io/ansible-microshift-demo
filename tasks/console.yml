@@ -1,0 +1,102 @@
+- name: Get an existing Service object
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Service
+    name: console-np-service
+    namespace: kube-system
+  register: console_service
+
+- name: Deploy Console Service Account
+  block:
+    - name: Create service account
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: v1
+          kind: ServiceAccount
+          metadata:
+            name: okd-console
+            namespace: kube-system
+            labels:
+              sa: okd
+
+    - name: Cluster role binding
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            creationTimestamp: null
+            name: okd-console
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: cluster-admin
+          subjects:
+          - kind: ServiceAccount
+            name: okd-console
+            namespace: kube-system
+
+- name: Get an existing Service object
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: ServiceAccount
+    namespace: kube-system
+    field_selectors:
+      - metadata.name=okd-console
+    wait_sleep: 1
+    wait_timeout: 30
+  register: console_sa
+
+- name: Deploy Console
+  block:
+    - name: Deploy console
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: console-deployment
+            namespace: kube-system
+            labels:
+              app: console
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: console
+            template:
+              metadata:
+                labels:
+                  app: console
+              spec:
+                serviceAccountName: okd-console
+                containers:
+                  - name: console-app
+                    image: quay.io/openshift/origin-console:4.2
+
+    - name: Expose http port for Console
+      kubernetes.core.k8s:
+        definition:
+          kind: Service
+          apiVersion: v1
+          metadata:
+            name: console-np-service
+            namespace: kube-system
+          spec:
+            selector:
+              app: console
+            type: NodePort
+            ports:
+              - name: http
+                port: 9000
+                targetPort: 9000
+                nodePort: 30090
+                protocol: TCP
+
+    - pause:
+        seconds: 1
+        prompt: |
+          =========================
+          Console running on http://console.{{ vagrant_ip}}.nip.io:30090
+          =========================
+

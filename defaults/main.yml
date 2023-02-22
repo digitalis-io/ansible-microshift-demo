@@ -1,0 +1,6 @@
+helm_version: 3.11.1
+kubeconfig: /var/lib/microshift/resources/kubeadmin/kubeconfig
+dns_server: 1.1.1.1
+update_kernel: false
+allow_reboot: false
+permit_sudo_nopasswd: true
