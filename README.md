@@ -5,6 +5,7 @@ Ansible Community Meet up in Dublin, 22nd Feb 2023
 
 Ansible role to install Redhat microshift
 
+The hardening role can also be found here: https://github.com/digitalis-io/ansible-role-hardening
 
 ## Recording
 
